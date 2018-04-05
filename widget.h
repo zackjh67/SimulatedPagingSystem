@@ -19,25 +19,30 @@ public:
 
 private slots:
     //slots that are signaled
-    void add_frames(frame_t indexes[], kbyte_t vals[]);
-    void remove_frames(frame_t indexes[]);
+    void add_frames(std::vector< std::pair< frame_t, byte_t > > frames);
+    void remove_frames(std::vector<frame_t> indexes);
     void set_num_frames(frame_t num_frames);
     void new_process(my_pid_t pid);
     void halt_process(my_pid_t pid);
     void get_pcb_list(pcb_list* pcbs);
+    void memory_full();
+    void finished();
 
     //event slots
     void on_step_button_clicked();
-    void on_load_button_clicked();
 
+    void on_start_button_clicked();
 
+    void on_reset_button_clicked();
 
 signals:
-    void sig_set_memory(kbyte_t k_bytes);
-    void sig_set_page_size(kbyte_t k_bytes);
+    void sig_set_memory(byte_t k_bytes);
+    void sig_set_page_size(byte_t k_bytes);
     //TODO option input later http://www.cplusplus.com/forum/general/5098/
     void sig_read_trace(QString filename);
     void sig_step();
+    void sig_start();
+    void sig_reset();
 
 private:
     Ui::Widget *ui;

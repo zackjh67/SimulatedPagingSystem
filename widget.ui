@@ -26,19 +26,6 @@
     <string>Step</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="load_button">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>50</y>
-     <width>101</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Load Trace Tape</string>
-   </property>
-  </widget>
   <widget class="QComboBox" name="trace_combo_box">
    <property name="geometry">
     <rect>
@@ -57,7 +44,7 @@
     </property>
    </item>
   </widget>
-  <widget class="QLabel" name="status_label">
+  <widget class="QLabel" name="select_tape_lbl">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -73,11 +60,11 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="page_tbl_lbl">
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>80</y>
+     <y>70</y>
      <width>271</width>
      <height>20</height>
     </rect>
@@ -99,9 +86,9 @@
    <property name="geometry">
     <rect>
      <x>450</x>
-     <y>250</y>
+     <y>44</y>
      <width>379</width>
-     <height>55</height>
+     <height>505</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -116,16 +103,9 @@
      <height>505</height>
     </size>
    </property>
-   <row>
-    <property name="text">
-     <string>Frame 0</string>
-    </property>
-   </row>
-   <row>
-    <property name="text">
-     <string>Frame 23</string>
-    </property>
-   </row>
+   <attribute name="verticalHeaderCascadingSectionResizes">
+    <bool>false</bool>
+   </attribute>
    <column>
     <property name="text">
      <string>PID</string>
@@ -138,30 +118,20 @@
    </column>
    <column>
     <property name="text">
+     <string>Value</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
      <string>Type</string>
     </property>
    </column>
-   <item row="0" column="0">
-    <property name="text">
-     <string>0</string>
-    </property>
-   </item>
-   <item row="0" column="1">
-    <property name="text">
-     <string>1</string>
-    </property>
-   </item>
-   <item row="0" column="2">
-    <property name="text">
-     <string>text</string>
-    </property>
-   </item>
   </widget>
-  <widget class="QLabel" name="label_3">
+  <widget class="QLabel" name="frames_lbl">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>70</y>
+     <x>450</x>
+     <y>10</y>
      <width>379</width>
      <height>20</height>
     </rect>
@@ -179,13 +149,13 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QTableWidget" name="memory_widget_2">
+  <widget class="QTableWidget" name="page_tbl_widget">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>250</y>
+     <x>60</x>
+     <y>90</y>
      <width>271</width>
-     <height>55</height>
+     <height>461</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -200,16 +170,6 @@
      <height>505</height>
     </size>
    </property>
-   <row>
-    <property name="text">
-     <string>Page 23</string>
-    </property>
-   </row>
-   <row>
-    <property name="text">
-     <string>Page 23</string>
-    </property>
-   </row>
    <column>
     <property name="text">
      <string>Type</string>
@@ -220,22 +180,12 @@
      <string>Size</string>
     </property>
    </column>
-   <item row="0" column="0">
-    <property name="text">
-     <string>Text</string>
-    </property>
-   </item>
-   <item row="0" column="1">
-    <property name="text">
-     <string>512</string>
-    </property>
-   </item>
   </widget>
-  <widget class="QLabel" name="status_label_2">
+  <widget class="QLabel" name="status_lbl">
    <property name="geometry">
     <rect>
-     <x>364</x>
-     <y>100</y>
+     <x>360</x>
+     <y>40</y>
      <width>61</width>
      <height>20</height>
     </rect>
@@ -265,7 +215,7 @@
     </property>
    </item>
   </widget>
-  <widget class="QLabel" name="status_label_3">
+  <widget class="QLabel" name="mem_size_lbl">
    <property name="geometry">
     <rect>
      <x>160</x>
@@ -299,7 +249,7 @@
     </property>
    </item>
   </widget>
-  <widget class="QLabel" name="status_label_4">
+  <widget class="QLabel" name="page_size_lbl">
    <property name="geometry">
     <rect>
      <x>300</x>
@@ -313,6 +263,32 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="start_button">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>570</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Start</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="reset_button">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>570</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reset</string>
    </property>
   </widget>
  </widget>

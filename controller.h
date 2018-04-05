@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <queue>
 #include <list>
+#include <vector>
 #include "my_types.h"
 
 
@@ -20,16 +21,16 @@ public:
 
 private:
     /* total size of memory in KBytes */
-    kbyte_t memory_size;
+    byte_t memory_size;
 
     /* total page size in KBytes */
-    kbyte_t page_size;
+    byte_t page_size;
 
-    /* array of physical memory frames */
-    frame_t * frameArr;
+    /* physical memory frames */
+    std::vector<byte_t> frame_arr;
 
     /* queue of available frames in memory */
-    std::queue<frame_t> availableFrames;
+    std::queue<frame_t> free_frames;
 
     /* map of PCBs */
     pcb_list pcbs;
@@ -42,16 +43,22 @@ signals:
     void sig_pcb_list(pcb_list* pcbs);
 
     /* add pages to frames in memory in GUI */
-    void sig_add_frames(frame_t index[], kbyte_t vals[]);
+    void sig_add_frames(std::vector< std::pair< frame_t, byte_t > > );
 
     /* remove frames from memory in GUI */
-    void sig_remove_frames(frame_t index[]);
+    void sig_remove_frames(std::vector<frame_t> indexes);
 
     /* set number of frames in GUI */
     void sig_set_num_frames(frame_t num_frames);
 
     /* show that new process has arrived and send pcb */
     void sig_new_process(my_pid_t pid);
+
+    /* signal GUI to display out of memory popup */
+    void sig_memory_full();
+
+    /* signals GUI when trace tape has been fully stepped through */
+    void sig_finished();
 
 
     //not needed prolly cuz pcb has address void sig_add_table(my_pid_t pid, page_table_t page_table);
@@ -61,14 +68,20 @@ signals:
 
 public slots:
     /* sets memory size based on signal from GUI */
-    void set_memory(kbyte_t mem_size);
+    void set_memory(byte_t mem_size);
 
     /* sets page size based on signal from GUI */
-    void set_page_size(kbyte_t page_size);
+    void set_page_size(byte_t page_size);
 
     //TODO option input later http://www.cplusplus.com/forum/general/5098/
     /* reads trace tape from a file */
     void read_trace(QString filename);
+
+    /* starts mem operations */
+    void start();
+
+    /* resets program */
+    void reset();
 
     /* steps through: process started -> page table created -> pags into memory
      *              or process ended -> pages out of memory */

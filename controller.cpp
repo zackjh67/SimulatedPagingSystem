@@ -3,9 +3,7 @@
 #include <QFileInfo>
 #include <QTextStream>
 #include <QObject>
-
-/* counter for steps */
-int step_ctr;
+#include <utility>
 
 /* holds steps for trace line */
 QStringList steps;
@@ -13,23 +11,21 @@ QStringList steps;
 /* individual process trace lines */
 std::queue<QString> trace;
 
+/* current step */
+int current_step;
+
 //constructor
 Controller::Controller(QObject *parent) : QObject(parent)
 {
 
 }
 
-//std::unordered_map<my_pid_t, pcb_t> Controller::getProcesses() const
-//{
-//    return processes;
-//}
-
-void Controller::set_memory(kbyte_t mem_size)
+void Controller::set_memory(byte_t mem_size)
 {
     this->memory_size = mem_size;
 }
 
-void Controller::set_page_size(kbyte_t page_size)
+void Controller::set_page_size(byte_t page_size)
 {
     this->page_size = page_size;
 }
@@ -65,81 +61,247 @@ void Controller::read_trace(QString filename)
     }
 }
 
+void Controller::start()
+{
+    if(memory_size == 0 || page_size == 0){
+        //TODO handle error
+    } else {
+        //TODO handle destroying this later - delete [] frameArr
+        //initialize frame array to fixed size
+        frame_arr.reserve((memory_size / page_size));
+
+        //add free frames to free frame list
+        for(frame_t i = 0; i < frame_arr.size(); i++){
+            free_frames.push(i);
+        }
+    }
+
+    //signal GUI to create physical memory table
+    emit sig_set_num_frames((frame_t)frame_arr.size());
+
+    //perform first step
+    this->step();
+}
+
+void Controller::reset()
+{
+    //reset sizes
+    memory_size, page_size = 0;
+    //empty frames
+    frame_arr.clear();
+    frame_arr.shrink_to_fit(); //C++11
+
+    //empty free frame list
+    if(!free_frames.empty()){
+        std::queue<frame_t> empty;
+        free_frames.swap(empty);
+    }
+
+    //empty pcb list
+    pcbs.clear();
+
+    //clear steps
+    steps.clear();
+
+    //empty trace Q
+    if(!trace.empty()){
+        std::queue<QString> empty;
+        trace.swap(empty);
+    }
+}
+
 void Controller::step()
 {
     if(trace.size() < 0){
         //TODO handle error
         //return -1;
+    } else if(trace.size() == 0){
+        //stepping finished
+        emit sig_finished();
     }
     else {
-        //perform different steps based on size of step list
-        switch(steps.size()){
-        case 0:
+        //perform differen't ops based on current_step and steps size
+        switch(current_step){
+        //size of 0 means line has yet to be read
+        case 0: {
             //parse steps into list
             steps = trace.front().split(" ");
-            break;
-        case 1:
-            break;
-        case 2:
-            break;
-        case 3:
-            //new process has arrived
-            my_pid_t pid = (my_pid_t)steps.front().toInt();
-            steps.pop_front();
+            trace.pop();
 
-            //create page table for process
+            //pid, Halt
+            if(steps.size() == 2){
+                //send signal to GUI to display halted process
+                emit sig_halt_process((my_pid_t)steps.front().toUInt());
+            }
+            //pid, text seg, data seg
+            else if(steps.size() == 3){
+                //send signal to GUI to display new process
+                emit sig_new_process((my_pid_t)steps.front().toUInt());
+            }
 
-
-            //create pcb for process
-//            pcb_t pcb_table = {
-//                0, //new state
-
-//            };
-
-//            //process state
-//            /* 0->new 1->ready 2->running 3->waiting 4->halted */
-//            ushort state;
-
-//            //address of page table
-//            page_table_t* page_table;
-
-//        //    size_t get_tbl_len(page_table_t* table){
-//        //        return table->size();
-//        //    }
-
-//            //length of page table
-//            kbyte_t table_length;
-
-//            //page table length
-//            //kbyte_t table_length = page_table->size();
-
-
-//            /* text segment */
-//            //length of text segment
-//            kbyte_t txt_seg_length;
-//            //start of text segment
-//            frame_t txt_start_idx;
-//            //end of text segment
-//            frame_t txt_end_idx;
-
-//            /* data segment */
-//            //length of data segment
-//            kbyte_t data_seg_length;
-//            //start of text segment
-//            frame_t data_start_idx;
-//            //end of text segment
-//            frame_t data_end_idx;
-
-            break;
-        default:
+            current_step++;
             break;
         }
+        //show page table and map to memory
+        //or show removed out of memory
+        case 1: {
+            //get pid regardless
+            my_pid_t pid = (my_pid_t)steps.front().toUInt();
+            steps.pop_front();
 
+            //pid, Halt
+            if(steps.size() == 2){
 
+                //look up pcb by pid
+                pcb_t pcb = pcbs[pid];
 
+                //get page table from pcb map
+                //page_table_t* table = (pcb_t)(pcbs->find(pid)).page_table;
+                //get page table
+                page_table_t* table = pcb.page_table;
 
+                //indexes to pass to GUI
+                std::vector<frame_t> indexes;
 
+                for(frame_t i = 0; i < table->size(); i++){
+                    //look up frames in table
+                    frame_t frame = table->at(i);
 
+                    //add frame to free frame list
+                    free_frames.push(frame);
 
+                    //add address to indexes[]
+                    indexes.push_back(frame);
+                }
+                //clear addresses from page table
+                table->clear();
+
+                //send signal to remove frames from GUI
+                emit sig_remove_frames(indexes);
+            }
+            //pid, text seg, data seg
+            else if(steps.size() == 3){
+
+                //create page table for process
+                //ProcID, TextSize, DataSize (in Bytes!)
+                page_table_t page_table;
+
+                //get text segment size
+                byte_t txt_seg_length = (byte_t)steps.front().toULong();
+                //calculate pages needed
+                frame_t num_txt_pages = (txt_seg_length / page_size);
+                if(txt_seg_length % page_size > 0){
+                    num_txt_pages++;
+                }
+                //remove from queue
+                steps.pop_front();
+
+                //get text segment size
+                byte_t data_seg_length = (byte_t)steps.front().toULong();
+                //calculate pages needed
+                frame_t num_data_pages = (data_seg_length / page_size);
+                if(data_seg_length % page_size > 0){
+                    num_data_pages++;
+                }
+                //remove from queue
+                steps.pop_front();
+
+                //create pcb for process w/ some default values
+                pcb_t pcb = {
+                    0,                                  //new state
+                    &page_table,                        //address of page table
+                    num_txt_pages + num_data_pages,     //total pages needed
+                    txt_seg_length + data_seg_length,   //total bytes of data
+                    txt_seg_length,                     //size of txt segment
+                    0,                                  //start of txt segment always 0 in this implementation
+                    0,                                  //temp val txt end index
+                    data_seg_length,                    //size of data segment
+                    0,                                  //temp val data start index
+                    0                                   //temp val data end index
+                };
+
+                /* populate the page table */
+                if(num_txt_pages > 0 && num_data_pages > 0){
+                    //if enough physical memory for process
+                    if(pcb.num_pages <= free_frames.size()){
+
+                        //vector of frames to send to GUI
+                        std::vector< std::pair< frame_t, byte_t > > added_frames;
+
+                        /* text segment */
+                        //loop through pages and add to memory and page table
+                        byte_t remaining_bytes= txt_seg_length;
+                        for(frame_t i = 0; i < num_txt_pages; i++){
+                            //place page value (bytes) into physical memory
+                            frame_t phys_address = free_frames.front();
+                            if(remaining_bytes >= page_size){
+                                frame_arr[phys_address] = page_size;
+                                //add to passed frames
+                                added_frames.push_back(std::make_pair(phys_address, page_size));
+                            } else {
+                                frame_arr[phys_address] = remaining_bytes;
+                                //add to passed frames
+                                added_frames.push_back(std::make_pair(phys_address, page_size));
+                            }
+                            remaining_bytes -= page_size;
+
+                            //add memory address to page table
+                            page_table.push_back(phys_address);
+                            //remove page from free frame list
+                            free_frames.pop();
+                        }
+                        //set txt segment end index
+                        pcb.txt_end_idx = num_txt_pages - 1;
+
+                        //set data segment start index
+                        pcb.data_start_idx = num_txt_pages;
+
+                        /* data segment */
+                        //loop through pages and add to memory and page table
+                        remaining_bytes= data_seg_length;
+                        for(frame_t i = 0; i < num_data_pages; i++){
+                            //place page value (bytes) into physical memory
+                            frame_t phys_address = free_frames.front();
+                            if(remaining_bytes >= page_size){
+                                frame_arr[phys_address] = page_size;
+                                //add to passed frames
+                                added_frames.push_back(std::make_pair(phys_address, page_size));
+                            } else {
+                                frame_arr[phys_address] = remaining_bytes;
+                                //add to passed frames
+                                added_frames.push_back(std::make_pair(phys_address, page_size));
+                            }
+                            remaining_bytes -= page_size;
+
+                            //add memory address to page table
+                            page_table.push_back(phys_address);
+                            //remove page from free frame list
+                            free_frames.pop();
+                        }
+
+                        //set txt segment end index- also could be size()-1, but done this way for future implementation
+                        pcb.data_end_idx = pcb.data_start_idx + num_data_pages - 1;
+
+                    } else {
+                        //send out of memory error to GUI
+                        emit sig_memory_full();
+                    }
+                } else {
+                    //we have a problem
+                }
+
+                //add pcb to list
+                //pcbs->insert(make_pair(pid, pcb));
+                pcbs.insert(std::make_pair(pid, pcb));
+
+            }
+            current_step++;
+            break;
+        }
+        default: {
+
+            break;
+        }
+        }
     }
 }
