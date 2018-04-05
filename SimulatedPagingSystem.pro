@@ -17,6 +17,7 @@ SOURCES += main.cpp\
     controller.cpp
 
 HEADERS  += widget.h \
-    controller.h
+    controller.h \
+    my_types.h
 
 FORMS    += widget.ui

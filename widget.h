@@ -2,6 +2,8 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QString>
+#include "my_types.h"
 
 namespace Ui {
 class Widget;
@@ -16,22 +18,32 @@ public:
     ~Widget();
 
 private slots:
-    void on_stepButton_clicked();
-    void add_page(int);
-    void remove_page(int);
-    void set_frames(int);
+    //slots that are signaled
+    void add_frames(frame_t indexes[], kbyte_t vals[]);
+    void remove_frames(frame_t indexes[]);
+    void set_num_frames(frame_t num_frames);
+    void new_process(my_pid_t pid);
+    void halt_process(my_pid_t pid);
+    void get_pcb_list(pcb_list* pcbs);
 
-    void on_loadButton_clicked();
+    //event slots
+    void on_step_button_clicked();
+    void on_load_button_clicked();
+
+
 
 signals:
-    void sig_set_memory(int bytes);
-    void sig_set_page_size(int bytes);
+    void sig_set_memory(kbyte_t k_bytes);
+    void sig_set_page_size(kbyte_t k_bytes);
     //TODO option input later http://www.cplusplus.com/forum/general/5098/
     void sig_read_trace(QString filename);
     void sig_step();
 
 private:
     Ui::Widget *ui;
+
+    /* GUI's reference to pcb list */
+    pcb_list pcbs;
 };
 
 #endif // WIDGET_H
