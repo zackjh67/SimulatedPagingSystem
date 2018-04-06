@@ -38,7 +38,7 @@ signals:
     void sig_create_page_table(my_pid_t, std::vector< std::tuple<frame_t, frame_t, QString > >);
 
     /* add pages to frames in memory in GUI */
-    void sig_add_frames(std::vector< std::pair< frame_t, byte_t > > );
+    void sig_add_frames(std::vector< std::tuple<frame_t, my_pid_t, frame_t, byte_t, QString> > frames);
 
     /* remove frames from memory in GUI */
     void sig_remove_frames(std::vector<frame_t> indexes);
@@ -57,6 +57,9 @@ signals:
 
     /* halt process in GUI */
     void sig_halt_process(my_pid_t pid);
+
+    /* Sends trace file to GUI */
+    void sig_send_trace(std::queue<QString> trace);
 
 public slots:
     /* sets memory size based on signal from GUI */

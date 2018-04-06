@@ -51,6 +51,6 @@ typedef struct {
 } pcb_t;
 
 /* list of pcb's */
-typedef std::unordered_map<my_pid_t, pcb_t> pcb_list;
+typedef std::unordered_map<my_pid_t, pcb_t*> pcb_list;
 
 #endif // MY_TYPES_H

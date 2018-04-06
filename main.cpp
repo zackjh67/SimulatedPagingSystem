@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <my_types.h>
 #include <iostream>
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -15,14 +16,14 @@ int main(int argc, char *argv[])
     QObject::connect(&c, SIGNAL(sig_new_process(my_pid_t)), &w, SLOT(new_process(my_pid_t)));
     QObject::connect(&c, SIGNAL(sig_halt_process(my_pid_t)), &w, SLOT(halt_process(my_pid_t)));
     QObject::connect(&c, SIGNAL(sig_set_num_frames(frame_t)), &w, SLOT(set_num_frames(frame_t)));
-    QObject::connect(&c, SIGNAL(sig_add_frames(std::vector<std::pair<frame_t,byte_t> >)), &w, SLOT(add_frames(std::vector<std::pair<frame_t,byte_t> >)));
+    QObject::connect(&c, SIGNAL(sig_add_frames(std::vector< std::tuple<frame_t, my_pid_t, frame_t, byte_t, QString> >)),
+                     &w, SLOT(add_frames(std::vector< std::tuple<frame_t, my_pid_t, frame_t, byte_t, QString> >)));
     QObject::connect(&c, SIGNAL(sig_remove_frames(std::vector<frame_t>)), &w, SLOT(remove_frames(std::vector<frame_t>)));
     QObject::connect(&c, SIGNAL(sig_memory_full()), &w, SLOT(memory_full()));
     QObject::connect(&c, SIGNAL(sig_finished()), &w, SLOT(finished()));
-    QObject::connect(&c,
-                     SIGNAL(sig_create_page_table(my_pid_t,std::vector<std::tuple<frame_t,frame_t,QString> >)),
-                     &w,
-                     SLOT(create_page_table(my_pid_t,std::vector<std::tuple<frame_t,frame_t,QString> >)));
+    QObject::connect(&c, SIGNAL(sig_create_page_table(my_pid_t,std::vector<std::tuple<frame_t,frame_t,QString> >)),
+                     &w, SLOT(create_page_table(my_pid_t,std::vector<std::tuple<frame_t,frame_t,QString> >)));
+    QObject::connect(&c, SIGNAL(sig_send_trace(std::queue<QString>)), &w, SLOT(populate_trace(std::queue<QString>)));
 
 
     //signals from GUI

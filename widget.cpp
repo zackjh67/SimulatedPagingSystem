@@ -4,6 +4,7 @@
 #include <tuple>
 
 my_pid_t last_pid;
+int step_ctr = 1;
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -12,7 +13,9 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     //hide status label
     ui->status_lbl->hide();
-    ui->reset_button->hide(); //doesn't work yet :(
+    ui->reset_button->hide();//doesn't quite work yet
+    ui->reset_button->setEnabled(false); //disabled unil finished
+    ui->step_button->setEnabled(false); //disabled until started
 }
 
 Widget::~Widget()
@@ -41,31 +44,50 @@ void Widget::create_page_table(my_pid_t pid, std::vector<std::tuple<frame_t, fra
 
 void Widget::on_step_button_clicked()
 {
-    ui->status_lbl->hide();
+    //delect any existing frames
+    ui->memory_widget->clearSelection();
+    ui->page_tbl_widget->clearFocus();
+
     emit sig_step();
+
+    //highlight current step
+    if (ui->trace_list->count() > 0) {
+      ui->trace_list->item(step_ctr)->setSelected(true);
+    }
+    ui->trace_list->setFocus();
+
+
+    step_ctr++;
 }
 
-void Widget::add_frames(std::vector< std::pair< frame_t, byte_t > > frames){
+void Widget::add_frames(std::vector< std::tuple<frame_t, my_pid_t, frame_t, byte_t, QString> > frames){
     for(int i = 0; i < frames.size(); i++){
-        //get pair from vector
-        std::pair<frame_t, byte_t> pr = frames[i];
-
         //set labels accordingly
         //pid
-        ui->memory_widget->setItem(pr.first, 0, new QTableWidgetItem(QString::number(last_pid)));
+        ui->memory_widget->setItem(std::get<0>(frames[i]), 0, new QTableWidgetItem(QString::number(std::get<1>(frames[i]))));
         //page#
-        //TODO ui->memory_widget->setItem(pr.first, 1, new QTableWidgetItem("page#"));
+        ui->memory_widget->setItem(std::get<0>(frames[i]), 1, new QTableWidgetItem(QString::number(std::get<2>(frames[i]))));
         //value
-        ui->memory_widget->setItem(pr.first, 2, new QTableWidgetItem(QString::number(pr.second)));
+        ui->memory_widget->setItem(std::get<0>(frames[i]), 2, new QTableWidgetItem(QString::number(std::get<3>(frames[i]))));
         //type
-        //TODO ui->memory_widget->setItem(pr.first, 3, new QTableWidgetItem("Hello"));
+        ui->memory_widget->setItem(std::get<0>(frames[i]), 3, new QTableWidgetItem(std::get<4>(frames[i])));
+
+        //highlight frame accordingly
+        ui->memory_widget->item(std::get<0>(frames[i]), 0)->setSelected(true);
+        ui->memory_widget->item(std::get<0>(frames[i]), 1)->setSelected(true);
+        ui->memory_widget->item(std::get<0>(frames[i]), 2)->setSelected(true);
+        ui->memory_widget->item(std::get<0>(frames[i]), 3)->setSelected(true);
+
     }
+            ui->memory_widget->setFocus();
 }
 
 void Widget::remove_frames(std::vector<frame_t> indexes){
     for(frame_t i = 0; i < indexes.size(); i++){
         ui->memory_widget->setItem(indexes[i], 0, new QTableWidgetItem(""));
+        ui->memory_widget->setItem(indexes[i], 1, new QTableWidgetItem(""));
         ui->memory_widget->setItem(indexes[i], 2, new QTableWidgetItem(""));
+        ui->memory_widget->setItem(indexes[i], 3, new QTableWidgetItem(""));
     }
 }
 
@@ -76,7 +98,6 @@ void Widget::set_num_frames(frame_t num_frames){
     //set row headers
     for(frame_t i = 0; i < num_frames; i++){
         QString f = "Frame ";
-        //QString n = QString::number()
         f.append(QString::number(i));
         ui->memory_widget->setVerticalHeaderItem(i, new QTableWidgetItem(f));
     }
@@ -112,11 +133,39 @@ void Widget::memory_full()
 
 void Widget::finished()
 {
-    //TODO
+    ui->status_lbl->setText("Trace Finished");
+    ui->start_button->setEnabled(false);
+    ui->step_button->setEnabled(false);
+    ui->reset_button->setEnabled(true);
+}
+
+void Widget::populate_trace(std::queue<QString> trace)
+{
+    //populate trace tape list
+    while(trace.size() != 0){
+        ui->trace_list->addItem(trace.front());
+        trace.pop();
+    }
+
+    //highlight first step
+    if (ui->trace_list->count() > 0) {
+      ui->trace_list->item(0)->setSelected(true);
+    }
+    ui->trace_list->setFocus();
 }
 
 void Widget::on_start_button_clicked()
 {
+    //disable start and reset button
+    ui->start_button->setEnabled(false);
+    ui->reset_button->setEnabled(false);
+    //enable step button
+    ui->step_button->setEnabled(true);
+    //disable filename, memory, and page size changes
+    ui->trace_combo_box->setEnabled(false);
+    ui->memory_size_box->setEnabled(false);
+    ui->page_size_box->setEnabled(false);
+
     //convert kbytes to bytes and send memory size to controller
     emit sig_set_memory((ui->memory_size_box->currentText().toULong()) * 1024);
 
@@ -125,7 +174,6 @@ void Widget::on_start_button_clicked()
 
     //read selected trace tape
     emit sig_read_trace(ui->trace_combo_box->currentText());
-    //ui->mem_size_lbl->setText(ui->trace_combo_box->currentText());
 
     //send start signal to start controller steps
     emit sig_start();
@@ -133,5 +181,16 @@ void Widget::on_start_button_clicked()
 
 void Widget::on_reset_button_clicked()
 {
+    ui->reset_button->setEnabled(false);
+    ui->memory_size_box->setEnabled(true);
+    ui->page_size_box->setEnabled(true);
+    ui->trace_combo_box->setEnabled(true);
+    ui->start_button->setEnabled(true);
+
+    //clear contents
+    ui->trace_list->clear();
+    ui->memory_widget->clearContents();
+    ui->page_tbl_widget->clearContents();
+
     emit sig_reset();
 }

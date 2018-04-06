@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QString>
 #include "my_types.h"
+#include <queue>
 
 namespace Ui {
 class Widget;
@@ -20,13 +21,15 @@ public:
 private slots:
     //slots that are signaled
     void create_page_table(my_pid_t pid, std::vector<std::tuple<frame_t, frame_t, QString> > table);
-    void add_frames(std::vector< std::pair< frame_t, byte_t > > frames);
+    void add_frames(std::vector< std::tuple<frame_t, my_pid_t, frame_t, byte_t, QString> > frames);
     void remove_frames(std::vector<frame_t> indexes);
     void set_num_frames(frame_t num_frames);
     void new_process(my_pid_t pid);
     void halt_process(my_pid_t pid);
     void memory_full();
     void finished();
+    void populate_trace(std::queue<QString> trace);
+
 
     //event slots
     void on_step_button_clicked();

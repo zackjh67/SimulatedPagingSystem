@@ -10,30 +10,6 @@
     <height>620</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>20</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>843</width>
-    <height>620</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>16777215</width>
-    <height>16777206</height>
-   </size>
-  </property>
-  <property name="sizeIncrement">
-   <size>
-    <width>5</width>
-    <height>5</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>Paging Sim</string>
   </property>
@@ -43,364 +19,254 @@
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>
-  <widget class="QPushButton" name="step_button">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>580</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Step</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="trace_combo_box">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>341</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>121</width>
-     <height>22</height>
-    </size>
-   </property>
-   <property name="sizeAdjustPolicy">
-    <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-   </property>
-   <item>
-    <property name="text">
-     <string>input3a.data</string>
-    </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="select_tape_lbl">
+     <property name="minimumSize">
+      <size>
+       <width>101</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Select Trace Tape</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>input3b.data</string>
-    </property>
+   <item row="6" column="2">
+    <widget class="QTableWidget" name="memory_widget">
+     <attribute name="verticalHeaderCascadingSectionResizes">
+      <bool>false</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string>PID</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Page #</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Value</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>input3c.data</string>
-    </property>
+   <item row="1" column="0">
+    <widget class="QComboBox" name="trace_combo_box">
+     <property name="minimumSize">
+      <size>
+       <width>121</width>
+       <height>22</height>
+      </size>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+     </property>
+     <item>
+      <property name="text">
+       <string>input3a.data</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>input3b.data</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>input3c.data</string>
+      </property>
+     </item>
+    </widget>
    </item>
-  </widget>
-  <widget class="QLabel" name="select_tape_lbl">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>0</y>
-     <width>331</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>101</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>Select Trace Tape</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QLabel" name="page_tbl_lbl">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>70</y>
-     <width>271</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>271</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>Page Table PID 0123</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QTableWidget" name="memory_widget">
-   <property name="geometry">
-    <rect>
-     <x>720</x>
-     <y>100</y>
-     <width>661</width>
-     <height>505</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>379</width>
-     <height>505</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>16777215</width>
-     <height>505</height>
-    </size>
-   </property>
-   <attribute name="verticalHeaderCascadingSectionResizes">
-    <bool>false</bool>
-   </attribute>
-   <column>
-    <property name="text">
-     <string>PID</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Page #</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Value</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Type</string>
-    </property>
-   </column>
-  </widget>
-  <widget class="QLabel" name="frames_lbl">
-   <property name="geometry">
-    <rect>
-     <x>790</x>
-     <y>70</y>
-     <width>591</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>379</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>Physical Memory</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QTableWidget" name="page_tbl_widget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>90</y>
-     <width>541</width>
-     <height>461</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>271</width>
-     <height>461</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>16777215</width>
-     <height>505</height>
-    </size>
-   </property>
-   <column>
-    <property name="text">
-     <string>Page #</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Frame #</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Type</string>
-    </property>
-   </column>
-  </widget>
-  <widget class="QLabel" name="status_lbl">
-   <property name="geometry">
-    <rect>
-     <x>380</x>
-     <y>0</y>
-     <width>391</width>
-     <height>131</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>22</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>Status</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="memory_size_box">
-   <property name="geometry">
-    <rect>
-     <x>380</x>
-     <y>20</y>
-     <width>331</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>121</width>
-     <height>22</height>
-    </size>
-   </property>
-   <property name="sizeAdjustPolicy">
-    <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-   </property>
-   <item>
-    <property name="text">
-     <string>4</string>
-    </property>
+   <item row="11" column="0">
+    <widget class="QPushButton" name="start_button">
+     <property name="text">
+      <string>Start</string>
+     </property>
+    </widget>
    </item>
-  </widget>
-  <widget class="QLabel" name="mem_size_lbl">
-   <property name="geometry">
-    <rect>
-     <x>380</x>
-     <y>0</y>
-     <width>331</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>101</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>Select Memory Size (KB)</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="page_size_box">
-   <property name="geometry">
-    <rect>
-     <x>1090</x>
-     <y>20</y>
-     <width>291</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>121</width>
-     <height>22</height>
-    </size>
-   </property>
-   <property name="sizeAdjustPolicy">
-    <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-   </property>
-   <item>
-    <property name="text">
-     <string>512</string>
-    </property>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Trace Tape</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </item>
-  </widget>
-  <widget class="QLabel" name="page_size_lbl">
-   <property name="geometry">
-    <rect>
-     <x>1090</x>
-     <y>0</y>
-     <width>291</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>101</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>Select Page Size (Bytes)</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="start_button">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>580</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Start</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="reset_button">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>580</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Reset</string>
-   </property>
-  </widget>
+   <item row="6" column="0">
+    <widget class="QListWidget" name="trace_list">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QTableWidget" name="page_tbl_widget">
+     <column>
+      <property name="text">
+       <string>Page #</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Frame #</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="11" column="1">
+    <widget class="QPushButton" name="step_button">
+     <property name="text">
+      <string>Step</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="2">
+    <widget class="QPushButton" name="reset_button">
+     <property name="text">
+      <string>Reset</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLabel" name="status_lbl">
+     <property name="font">
+      <font>
+       <pointsize>22</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Status</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="page_tbl_lbl">
+     <property name="minimumSize">
+      <size>
+       <width>271</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Page Table PID 0123</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLabel" name="frames_lbl">
+     <property name="minimumSize">
+      <size>
+       <width>379</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Physical Memory</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="memory_size_box">
+     <property name="minimumSize">
+      <size>
+       <width>121</width>
+       <height>22</height>
+      </size>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+     </property>
+     <item>
+      <property name="text">
+       <string>4</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QComboBox" name="page_size_box">
+     <property name="minimumSize">
+      <size>
+       <width>121</width>
+       <height>22</height>
+      </size>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+     </property>
+     <item>
+      <property name="text">
+       <string>512</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="mem_size_lbl">
+     <property name="minimumSize">
+      <size>
+       <width>101</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Select Memory Size (KB)</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="page_size_lbl">
+     <property name="minimumSize">
+      <size>
+       <width>101</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Select Page Size (Bytes)</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
