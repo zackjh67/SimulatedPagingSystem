@@ -19,12 +19,12 @@ public:
 
 private slots:
     //slots that are signaled
+    void create_page_table(my_pid_t pid, std::vector<std::tuple<frame_t, frame_t, QString> > table);
     void add_frames(std::vector< std::pair< frame_t, byte_t > > frames);
     void remove_frames(std::vector<frame_t> indexes);
     void set_num_frames(frame_t num_frames);
     void new_process(my_pid_t pid);
     void halt_process(my_pid_t pid);
-    void get_pcb_list(pcb_list* pcbs);
     void memory_full();
     void finished();
 

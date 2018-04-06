@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <utility>
+#include <tuple>
 
 my_pid_t last_pid;
 
@@ -9,6 +10,9 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    //hide status label
+    ui->status_lbl->hide();
+    ui->reset_button->hide(); //doesn't work yet :(
 }
 
 Widget::~Widget()
@@ -16,8 +20,28 @@ Widget::~Widget()
     delete ui;
 }
 
+void Widget::create_page_table(my_pid_t pid, std::vector<std::tuple<frame_t, frame_t, QString> > table)
+{
+    //set pid label accordingly
+    ui->page_tbl_lbl->setText("Page Table PID: " + QString::number(pid));
+
+    //set page table rows
+    ui->page_tbl_widget->setRowCount((int)table.size());
+
+    for(frame_t i = 0; i < table.size(); i++){
+        //get tuple
+        std::tuple<frame_t, frame_t, QString> tup = table[i];
+
+        //set labels
+        ui->page_tbl_widget->setItem(i, 0, new QTableWidgetItem(QString::number(std::get<0>(tup))));
+        ui->page_tbl_widget->setItem(i, 1, new QTableWidgetItem(QString::number(std::get<1>(tup))));
+        ui->page_tbl_widget->setItem(i, 2, new QTableWidgetItem(std::get<2>(tup)));
+    }
+}
+
 void Widget::on_step_button_clicked()
 {
+    ui->status_lbl->hide();
     emit sig_step();
 }
 
@@ -39,7 +63,10 @@ void Widget::add_frames(std::vector< std::pair< frame_t, byte_t > > frames){
 }
 
 void Widget::remove_frames(std::vector<frame_t> indexes){
-
+    for(frame_t i = 0; i < indexes.size(); i++){
+        ui->memory_widget->setItem(indexes[i], 0, new QTableWidgetItem(""));
+        ui->memory_widget->setItem(indexes[i], 2, new QTableWidgetItem(""));
+    }
 }
 
 void Widget::set_num_frames(frame_t num_frames){
@@ -62,6 +89,7 @@ void Widget::new_process(my_pid_t pid)
     QString pid_str = QString::number(pid);
     new_message.append(pid_str);
     ui->status_lbl->setText(new_message);
+    ui->status_lbl->show();
 }
 
 void Widget::halt_process(my_pid_t pid)
@@ -72,22 +100,19 @@ void Widget::halt_process(my_pid_t pid)
     halt_message.append(pid_str);
     halt_message.append(" Halted");
     ui->status_lbl->setText(halt_message);
-}
-
-void Widget::get_pcb_list(pcb_list *pcbs)
-{
-
+    ui->status_lbl->show();
 }
 
 void Widget::memory_full()
 {
     //TODO make this better later
     ui->status_lbl->setText("Memory full!");
+    ui->status_lbl->show();
 }
 
 void Widget::finished()
 {
-
+    //TODO
 }
 
 void Widget::on_start_button_clicked()
@@ -100,6 +125,7 @@ void Widget::on_start_button_clicked()
 
     //read selected trace tape
     emit sig_read_trace(ui->trace_combo_box->currentText());
+    //ui->mem_size_lbl->setText(ui->trace_combo_box->currentText());
 
     //send start signal to start controller steps
     emit sig_start();

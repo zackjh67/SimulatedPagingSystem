@@ -1,7 +1,8 @@
 #include "widget.h"
 #include "controller.h"
 #include <QApplication>
-
+#include <my_types.h>
+#include <iostream>
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -11,7 +12,6 @@ int main(int argc, char *argv[])
 
     /* setup signals */
     //signals to GUI
-    QObject::connect(&c, SIGNAL(sig_pcb_list(pcb_list*)), &w, SLOT(get_pcb_list(pcb_list*)));
     QObject::connect(&c, SIGNAL(sig_new_process(my_pid_t)), &w, SLOT(new_process(my_pid_t)));
     QObject::connect(&c, SIGNAL(sig_halt_process(my_pid_t)), &w, SLOT(halt_process(my_pid_t)));
     QObject::connect(&c, SIGNAL(sig_set_num_frames(frame_t)), &w, SLOT(set_num_frames(frame_t)));
@@ -19,6 +19,10 @@ int main(int argc, char *argv[])
     QObject::connect(&c, SIGNAL(sig_remove_frames(std::vector<frame_t>)), &w, SLOT(remove_frames(std::vector<frame_t>)));
     QObject::connect(&c, SIGNAL(sig_memory_full()), &w, SLOT(memory_full()));
     QObject::connect(&c, SIGNAL(sig_finished()), &w, SLOT(finished()));
+    QObject::connect(&c,
+                     SIGNAL(sig_create_page_table(my_pid_t,std::vector<std::tuple<frame_t,frame_t,QString> >)),
+                     &w,
+                     SLOT(create_page_table(my_pid_t,std::vector<std::tuple<frame_t,frame_t,QString> >)));
 
 
     //signals from GUI
@@ -32,4 +36,5 @@ int main(int argc, char *argv[])
     w.show();
 
     return a.exec();
+    return 0;
 }

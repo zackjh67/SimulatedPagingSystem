@@ -23,22 +23,14 @@ typedef struct {
     /* 0->new 1->ready 2->running 3->waiting 4->halted */
     unsigned short state;
 
-    //address of page table
+    //pointer to a page table
     page_table_t* page_table;
-
-//    size_t get_tbl_len(page_table_t* table){
-//        return table->size();
-//    }
 
     //total number of pages
     frame_t num_pages;
 
     //length of page table
     byte_t table_length;
-
-    //page table length
-    //kbyte_t table_length = page_table->size();
-
 
     /* text segment */
     //length of text segment

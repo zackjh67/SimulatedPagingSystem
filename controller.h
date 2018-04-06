@@ -17,8 +17,6 @@ class Controller : public QObject
 public:
     explicit Controller(QObject *parent = 0);
 
-    //std::unordered_map<my_pid_t, pcb_t> getProcesses() const;
-
 private:
     /* total size of memory in KBytes */
     byte_t memory_size;
@@ -36,11 +34,8 @@ private:
     pcb_list pcbs;
 
 signals:
-    //TODO make sent pcb_map (processes), page table, & frameArr read only
-    //http://www.cplusplus.com/forum/articles/36872/
-
-    /* pass process data to GUI */
-    void sig_pcb_list(pcb_list* pcbs);
+    /* create page table in GUI */
+    void sig_create_page_table(my_pid_t, std::vector< std::tuple<frame_t, frame_t, QString > >);
 
     /* add pages to frames in memory in GUI */
     void sig_add_frames(std::vector< std::pair< frame_t, byte_t > > );
@@ -60,9 +55,6 @@ signals:
     /* signals GUI when trace tape has been fully stepped through */
     void sig_finished();
 
-
-    //not needed prolly cuz pcb has address void sig_add_table(my_pid_t pid, page_table_t page_table);
-
     /* halt process in GUI */
     void sig_halt_process(my_pid_t pid);
 
@@ -73,7 +65,7 @@ public slots:
     /* sets page size based on signal from GUI */
     void set_page_size(byte_t page_size);
 
-    //TODO option input later http://www.cplusplus.com/forum/general/5098/
+    //TODO optional param later http://www.cplusplus.com/forum/general/5098/
     /* reads trace tape from a file */
     void read_trace(QString filename);
 

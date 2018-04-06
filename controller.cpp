@@ -4,6 +4,7 @@
 #include <QTextStream>
 #include <QObject>
 #include <utility>
+#include <iostream>
 
 /* holds steps for trace line */
 QStringList steps;
@@ -12,7 +13,7 @@ QStringList steps;
 std::queue<QString> trace;
 
 /* current step */
-int current_step;
+int current_step = 0;
 
 //constructor
 Controller::Controller(QObject *parent) : QObject(parent)
@@ -32,7 +33,8 @@ void Controller::set_page_size(byte_t page_size)
 
 void Controller::read_trace(QString filename)
 {
-    QString path = "./traces/";
+    //hardcoded for now :(
+    QString path = "C:/Users/Zack/Documents/SimulatedPagingSystem/traces/";
     path.append(filename);
 
     QFileInfo check_file(path);
@@ -63,15 +65,20 @@ void Controller::read_trace(QString filename)
 
 void Controller::start()
 {
+
     if(memory_size == 0 || page_size == 0){
         //TODO handle error
     } else {
+        frame_t calc_frames = memory_size / page_size;
         //TODO handle destroying this later - delete [] frameArr
         //initialize frame array to fixed size
-        frame_arr.reserve((memory_size / page_size));
+        frame_arr.reserve((calc_frames));
 
-        //add free frames to free frame list
-        for(frame_t i = 0; i < frame_arr.size(); i++){
+        //initialize frames to 0s
+        for(frame_t i = 0; i < calc_frames; i++){
+            frame_arr.push_back(0);
+
+            //add free frames to free frame list
             free_frames.push(i);
         }
     }
@@ -147,16 +154,18 @@ void Controller::step()
         case 1: {
             //get pid regardless
             my_pid_t pid = (my_pid_t)steps.front().toUInt();
-            steps.pop_front();
 
             //pid, Halt
             if(steps.size() == 2){
+                //remove pid segment
+                steps.pop_front();
 
                 //look up pcb by pid
                 pcb_t pcb = pcbs[pid];
 
-                //get page table from pcb map
-                //page_table_t* table = (pcb_t)(pcbs->find(pid)).page_table;
+                //change process state
+                pcb.state = 4; //halted
+
                 //get page table
                 page_table_t* table = pcb.page_table;
 
@@ -178,9 +187,16 @@ void Controller::step()
 
                 //send signal to remove frames from GUI
                 emit sig_remove_frames(indexes);
+
+                //clear steps
+                steps.pop_front();
+                //reset counter
+                current_step = 0;
             }
             //pid, text seg, data seg
             else if(steps.size() == 3){
+                //remove pid segment
+                steps.pop_front();
 
                 //create page table for process
                 //ProcID, TextSize, DataSize (in Bytes!)
@@ -225,6 +241,9 @@ void Controller::step()
                     //if enough physical memory for process
                     if(pcb.num_pages <= free_frames.size()){
 
+                        //vector to pass back to GUI for rendering page table
+                        std::vector< std::tuple<frame_t, frame_t, QString > > gui_table;
+
                         //vector of frames to send to GUI
                         std::vector< std::pair< frame_t, byte_t > > added_frames;
 
@@ -241,12 +260,17 @@ void Controller::step()
                             } else {
                                 frame_arr[phys_address] = remaining_bytes;
                                 //add to passed frames
-                                added_frames.push_back(std::make_pair(phys_address, page_size));
+                                added_frames.push_back(std::make_pair(phys_address, remaining_bytes));
                             }
                             remaining_bytes -= page_size;
 
                             //add memory address to page table
                             page_table.push_back(phys_address);
+
+                            //add to GUI page table
+                            std::tuple <frame_t, frame_t, QString> tup = std::make_tuple(i, phys_address, "Text");
+                            gui_table.push_back(tup);
+
                             //remove page from free frame list
                             free_frames.pop();
                         }
@@ -275,12 +299,26 @@ void Controller::step()
 
                             //add memory address to page table
                             page_table.push_back(phys_address);
+
+                            //add to GUI page table
+                            std::tuple <frame_t, frame_t, QString> tup = std::make_tuple(i, phys_address, "Data");
+                            gui_table.push_back(tup);
+
+                            //add to GUI frame table
+                            emit sig_add_frames(added_frames);
+
                             //remove page from free frame list
                             free_frames.pop();
                         }
 
                         //set txt segment end index- also could be size()-1, but done this way for future implementation
                         pcb.data_end_idx = pcb.data_start_idx + num_data_pages - 1;
+
+                        //process in memory so it is running
+                        pcb.state = 3;
+
+                        //render page table in GUI
+                        emit sig_create_page_table(pid, gui_table);
 
                     } else {
                         //send out of memory error to GUI
@@ -293,9 +331,9 @@ void Controller::step()
                 //add pcb to list
                 //pcbs->insert(make_pair(pid, pcb));
                 pcbs.insert(std::make_pair(pid, pcb));
-
             }
-            current_step++;
+            //reset step
+            current_step = 0;
             break;
         }
         default: {
