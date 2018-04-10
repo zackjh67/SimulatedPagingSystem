@@ -4,9 +4,18 @@
 #include <my_types.h>
 #include <iostream>
 
+
+/*************************************************************************************
+ * Simulation of a process paging system in an operating system based on a trace tape.
+ * @author Zachary Hern
+ * @version 4/6/2018
+ *
+ *************************************************************************************/
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
     Widget w;
 
     Controller c;

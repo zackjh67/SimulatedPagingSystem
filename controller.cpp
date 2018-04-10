@@ -5,12 +5,13 @@
 #include <QObject>
 #include <utility>
 #include <iostream>
-/*
- * Simulation of a process paging system in an operating system based on a trace tape.
+
+/*************************************************************************************
+ * Controller program to manage memory and processes and update GUI accordingly.
  * @author Zachary Hern
  * @version 4/6/2018
  *
- * */
+ *************************************************************************************/
 
 /* holds steps for trace line */
 QStringList steps;
@@ -24,16 +25,28 @@ Controller::Controller(QObject *parent) : QObject(parent)
 
 }
 
+/*************************************************
+ * Sets memory size in bytes.
+ * @param mem_size : size of memory
+ *************************************************/
 void Controller::set_memory(byte_t mem_size)
 {
     this->memory_size = mem_size;
 }
 
+/*************************************************
+ * Sets page size in bytes.
+ * @param page_size : size of memory
+ *************************************************/
 void Controller::set_page_size(byte_t page_size)
 {
     this->page_size = page_size;
 }
 
+/*************************************************
+ * Reads trace tape from a file.
+ * @param filename : name of file to read
+ *************************************************/
 void Controller::read_trace(QString filename)
 {
     //hardcoded for now :(
@@ -47,7 +60,7 @@ void Controller::read_trace(QString filename)
         //get file from path
         QFile file(path);
 
-        //TODO error check later
+
         if(!file.open(QIODevice::ReadOnly)) {
             //QMessageBox::information(0, "error", file.errorString());
         }
@@ -68,6 +81,10 @@ void Controller::read_trace(QString filename)
     }
 }
 
+/*************************************************
+ * Starts trace tape read process.
+ * Signaled by GUI
+ *************************************************/
 void Controller::start()
 {
 
@@ -95,6 +112,10 @@ void Controller::start()
     this->step();
 }
 
+/*************************************************
+ * Resets controller program.
+ * Signaled by GUI
+ *************************************************/
 void Controller::reset()
 {
     //reset sizes
@@ -122,6 +143,10 @@ void Controller::reset()
     }
 }
 
+/*************************************************
+ * Steps through trace
+ * Signaled by GUI
+ *************************************************/
 void Controller::step()
 {
     if(trace.size() < 0){
@@ -319,7 +344,6 @@ void Controller::step()
                 }
 
                 //add pcb to list
-                //pcbs->insert(make_pair(pid, pcb));
                 pcbs.insert(std::make_pair(pid, pcb));
             }
             //stepping finished

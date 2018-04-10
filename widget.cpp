@@ -3,7 +3,10 @@
 #include <utility>
 #include <tuple>
 
+/* last process id passed to GUI */
 my_pid_t last_pid;
+
+/* current step */
 int step_ctr = 1;
 
 Widget::Widget(QWidget *parent) :

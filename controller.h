@@ -10,7 +10,12 @@
 #include <vector>
 #include "my_types.h"
 
-
+/*************************************************************************************
+ * Controller program to manage memory and processes and update GUI accordingly.
+ * @author Zachary Hern
+ * @version 4/6/2018
+ *
+ *************************************************************************************/
 class Controller : public QObject
 {
     Q_OBJECT

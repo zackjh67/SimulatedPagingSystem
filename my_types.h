@@ -3,6 +3,13 @@
 #include <vector>
 #include <unordered_map>
 
+/*************************************************************************************
+ * Custom types used by simulated paging system
+ * @author Zachary Hern
+ * @version 4/6/2018
+ *
+ *************************************************************************************/
+
 /* process id type for convenience and just cause */
 typedef unsigned int my_pid_t;
 
@@ -15,6 +22,7 @@ typedef unsigned long frame_t;
 /* type for page table */
 typedef std::vector<frame_t> page_table_t;
 
+/* pointer to segment end and start points in page table */
 typedef unsigned long table_ptr;
 
 /* PCB struct for each process */
